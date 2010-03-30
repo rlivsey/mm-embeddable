@@ -1,6 +1,55 @@
-= mm_compactable
+= MongoMapper Embeddable
 
-Description goes here.
+Because MongoDB doesn't have joins but does have the ability to embed documents in other documents, it is often the case that for query minimization purposes it is useful to provide a few key properties of a document when it's embedded in another one. MongoMapper Embeddable is a plugin for MongoMapper to do just that.
+
+== Installation
+
+    gem install mm-embeddable
+    
+== Usage
+
+To declare an embeddable version of a MongoMapper document, simply call <tt>embeds</tt> after all of your <tt>key</tt> declarations and specify the keys that should be embedded in the "compacted" version of the model. This will automatically generate a <tt>YourDocumentClass::Embeddable</tt> class that can be embedded in other documents.
+
+=== Example
+
+    require 'mongo_mapper'
+    require 'mm-embeddable'
+    
+    class User
+      include MongoMapper::Document
+      
+      key :name, String
+      key :profile_photo, String
+      key :bio, String
+      key :interests, Array
+      
+      embeds :name, :profile_photo
+    end
+    
+    class Post
+      include MongoMapper::Document
+      
+      key :author, User::Embeddable
+      key :title, String
+      key :body, String
+    end
+    
+This creates an embeddable version of the <tt>User</tt> model that only contains the name and profile picture. If that's all I access, then no additional queries are called. Example:
+
+    <h1><%= @post.title %></h1>
+    <span class='author'>
+      <img src='<%= @post.author.profile_photo %>'/> <%= @post.author.name %>
+    </span>
+    <div class='body'><%= @post.body %></div>
+    
+But if we need other attributes that haven't been stored in the embeddable model, we can do so seamlessly:
+
+    # no additional query is performed
+    @post.author.name
+    # the full document is seamlessly fetched in the background
+    @post.author.bio
+    
+In this way we take full advantage of Mongo's embedded documents while still being able to easily fall back to the full document when necessary.
 
 == Note on Patches/Pull Requests
  

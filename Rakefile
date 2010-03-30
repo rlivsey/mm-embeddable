@@ -4,13 +4,19 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "mm_compactable"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.name = "mm-embeddable"
+    gem.summary = %Q{Create compact, embeddable versions of your MongoMapper documents.}
+    gem.description = %Q{For query minimization purposes in MongoDB it is useful to provide a few key properties of a document when it's embedded in another one. MongoMapper Embeddable is a plugin for MongoMapper to do just that.}
     gem.email = "michael@intridea.com"
-    gem.homepage = "http://github.com/mbleigh/mm_compactable"
+    gem.homepage = "http://github.com/intridea/mm-embeddable"
+    gem.add_dependency 'mongo_mapper', '>= 0.7.0'
     gem.authors = ["Michael Bleigh"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency 'mocha'
+    gem.add_development_dependency 'machinist'
+    gem.add_development_dependency 'machinist_mongo'
+    gem.add_development_dependency 'faker'
+    
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
