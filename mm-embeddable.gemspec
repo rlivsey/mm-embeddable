@@ -24,6 +24,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "lib/mm-embeddable.rb",
+     "mm-embeddable.gemspec",
      "spec/blueprints.rb",
      "spec/mm_embeddable_spec.rb",
      "spec/spec.opts",

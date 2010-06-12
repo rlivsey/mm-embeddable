@@ -28,6 +28,15 @@ describe "MongoMapper::Plugins::Embeddable" do
       TestUser.expects(:find).with(mid).returns(u)
       TestUser::Embeddable.from_full(u).bio.should == 'Once upon a time.'
     end
+    
+    it 'should allow accessing the expanded object multiple times' do
+      mid = BSON::ObjectID.new
+      u = TestUser.new(:_id => mid, :name => "Frank", :bio => 'Once upon a time.')
+      TestUser.expects(:find).with(mid).returns(u)
+      e = TestUser::Embeddable.from_full(u)
+      e.bio.should == 'Once upon a time.'
+      e.bio.should == 'Once upon a time.'
+    end
   end
   
   describe ' in another model' do

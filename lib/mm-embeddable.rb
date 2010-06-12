@@ -29,12 +29,8 @@ module MongoMapper
         end
         
         def method_missing(*args)
-          if !@expanded
-            expand!
-            @expansion.send(*args)
-          else
-            super
-          end
+          expand! unless @expanded
+          @expansion.send(*args)
         end
         
         def self.to_mongo(instance)
