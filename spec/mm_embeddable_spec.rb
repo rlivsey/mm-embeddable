@@ -14,7 +14,7 @@ describe "MongoMapper::Plugins::Embeddable" do
   
   describe '::EmbeddedDocument' do
     it 'should set attributes from a document' do
-      mid = Mongo::ObjectID.new
+      mid = BSON::ObjectID.new
       c = TestUser::Embeddable.from_full(stub(:_id => mid, :login => 'abc', :name => 'Bob Bobson', :bio => "A great dude."))
       c.login.should == 'abc'
       c.name.should == 'Bob Bobson'
@@ -23,7 +23,7 @@ describe "MongoMapper::Plugins::Embeddable" do
     end
     
     it 'should expand when an attribute is missing' do
-      mid = Mongo::ObjectID.new
+      mid = BSON::ObjectID.new
       u = TestUser.new(:_id => mid, :name => "Frank", :bio => 'Once upon a time.')
       TestUser.expects(:find).with(mid).returns(u)
       TestUser::Embeddable.from_full(u).bio.should == 'Once upon a time.'
