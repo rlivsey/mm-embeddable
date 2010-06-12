@@ -13,6 +13,7 @@ module MongoMapper
         def self.from_full(full_document)
           d = self.new
           keys.keys.each do |k|
+            next if k == "_type"
             d.send("#{k}=".to_sym, full_document.send(k.to_sym))
           end
           d
