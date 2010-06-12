@@ -23,14 +23,13 @@ module MongoMapper
           @full_class or raise NotImplementedError, 'This embed has no full class.'
         end
         
-        def expand!
-          @expanded = true
-          @expansion = self.class.full_class.find(self.id)
+        def original_object
+          return @_original_object if defined?(@_original_object)
+          @_original_object = self.class.full_class.find(self.id)
         end
         
         def method_missing(*args)
-          expand! unless @expanded
-          @expansion.send(*args)
+          original_object.send(*args)
         end
         
         def self.to_mongo(instance)

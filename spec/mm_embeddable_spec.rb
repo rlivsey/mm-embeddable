@@ -37,6 +37,14 @@ describe "MongoMapper::Plugins::Embeddable" do
       e.bio.should == 'Once upon a time.'
       e.bio.should == 'Once upon a time.'
     end
+    
+    it "should allow accessing the original object directly" do
+      mid = BSON::ObjectID.new
+      u = TestUser.new(:_id => mid, :name => "Frank", :bio => 'Once upon a time.')
+      TestUser.expects(:find).with(mid).returns(u)
+      TestUser::Embeddable.from_full(u).original_object.should == u
+    end
+      
   end
   
   describe ' in another model' do
