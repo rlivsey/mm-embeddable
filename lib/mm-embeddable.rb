@@ -33,11 +33,12 @@ module MongoMapper
         end
         
         def self.to_mongo(instance)
+          return unless instance
           case instance
-            when full_class
-              from_full(instance).to_mongo
-            else
-              instance.to_mongo
+          when full_class
+            from_full(instance).to_mongo
+          else
+            instance.to_mongo
           end
         end
       end

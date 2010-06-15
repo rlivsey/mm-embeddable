@@ -60,5 +60,12 @@ describe "MongoMapper::Plugins::Embeddable" do
       t.sender._id.should == u1._id
       t.receivers.first.should be_kind_of(TestUser::Embeddable)
     end
+    
+    it "should not complain if embedded document is set to nil" do
+      t = TestMessage.new(:sender => nil)
+      lambda{
+        t.valid?
+      }.should_not raise_error
+    end
   end
 end
