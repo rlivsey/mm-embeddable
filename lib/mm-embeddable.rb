@@ -3,6 +3,8 @@ require 'mongo_mapper'
 module MongoMapper
   module Plugins
     module Embeddable
+      extend ActiveSupport::Concern
+
       class EmbeddableDocument #:nodoc:
         include ::MongoMapper::EmbeddedDocument
 
@@ -11,11 +13,11 @@ module MongoMapper
         end
 
         def self.from_full(full_document)
-          d = self.new
-          (full_class.embeddable_keys + [:_id]).each do |k|
-            d.send("#{k}=".to_sym, full_document.send(k.to_sym))
+          self.new.tap do |d|
+            (full_class.embeddable_keys + [:_id]).each do |k|
+              d.send("#{k}=".to_sym, full_document.send(k.to_sym))
+            end
           end
-          d
         end
 
         def self.full_class
@@ -59,8 +61,6 @@ module MongoMapper
             self.const_get(:Embeddable).key k
             self.const_get(:Embeddable).keys[k.to_s] = self.keys[k.to_s].dup
           end
-
-          include MongoMapper::Plugins::Embeddable::EmbeddableMethods
         end
 
         def embeddable_keys
@@ -68,7 +68,7 @@ module MongoMapper
         end
       end
 
-      module EmbeddableMethods
+      module InstanceMethods
         def to_embeddable
           self.class.const_get(:Embeddable).from_full(self)
         end
@@ -77,4 +77,4 @@ module MongoMapper
   end
 end
 
-MongoMapper::Document.append_extensions(MongoMapper::Plugins::Embeddable::ClassMethods)
+MongoMapper::Document.plugin(MongoMapper::Plugins::Embeddable)
