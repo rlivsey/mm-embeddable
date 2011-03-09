@@ -14,7 +14,7 @@ describe "MongoMapper::Plugins::Embeddable" do
   
   describe '::EmbeddedDocument' do
     it 'should set attributes from a document' do
-      mid = BSON::ObjectID.new
+      mid = BSON::ObjectId.new
       c = TestUser::Embeddable.from_full(stub(:_id => mid, :login => 'abc', :name => 'Bob Bobson', :bio => "A great dude."))
       c.login.should == 'abc'
       c.name.should == 'Bob Bobson'
@@ -23,14 +23,14 @@ describe "MongoMapper::Plugins::Embeddable" do
     end
     
     it 'should expand when an attribute is missing' do
-      mid = BSON::ObjectID.new
+      mid = BSON::ObjectId.new
       u = TestUser.new(:_id => mid, :name => "Frank", :bio => 'Once upon a time.')
       TestUser.expects(:find).with(mid).returns(u)
       TestUser::Embeddable.from_full(u).bio.should == 'Once upon a time.'
     end
     
     it 'should allow accessing the expanded object multiple times' do
-      mid = BSON::ObjectID.new
+      mid = BSON::ObjectId.new
       u = TestUser.new(:_id => mid, :name => "Frank", :bio => 'Once upon a time.')
       TestUser.expects(:find).with(mid).returns(u)
       e = TestUser::Embeddable.from_full(u)
@@ -39,7 +39,7 @@ describe "MongoMapper::Plugins::Embeddable" do
     end
     
     it "should allow accessing the original object directly" do
-      mid = BSON::ObjectID.new
+      mid = BSON::ObjectId.new
       u = TestUser.new(:_id => mid, :name => "Frank", :bio => 'Once upon a time.')
       TestUser.expects(:find).with(mid).returns(u)
       TestUser::Embeddable.from_full(u).original_object.should == u
