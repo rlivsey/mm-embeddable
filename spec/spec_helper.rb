@@ -2,12 +2,9 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'rubygems'
-gem 'rspec', '1.3.0'
+require 'rspec'
 
 require 'mm-embeddable'
-require 'spec'
-require 'spec/autorun'
-require 'spec/mocks'
 require 'mocha'
 
 class TestUser
@@ -34,7 +31,7 @@ require File.expand_path(File.dirname(__FILE__) + "/blueprints")
 
 MongoMapper.database = 'mm_plugin_test'
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.mock_with :mocha
   config.before(:all)    { Sham.reset(:before_all)  }
   config.before(:each)   { Sham.reset(:before_each); }#MongoMapper.connection.drop_database('mm_plugin_test') }

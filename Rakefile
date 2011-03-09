@@ -1,51 +1,81 @@
-require 'rubygems'
-require 'rake'
 
-begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "mm-embeddable"
-    gem.summary = %Q{Create compact, embeddable versions of your MongoMapper documents.}
-    gem.description = %Q{For query minimization purposes in MongoDB it is useful to provide a few key properties of a document when it's embedded in another one. MongoMapper Embeddable is a plugin for MongoMapper to do just that.}
-    gem.email = "michael@intridea.com"
-    gem.homepage = "http://github.com/intridea/mm-embeddable"
-    gem.add_dependency 'mongo_mapper', '>= 0.7.0'
-    gem.authors = ["Michael Bleigh"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
-    gem.add_development_dependency 'mocha'
-    gem.add_development_dependency 'machinist'
-    gem.add_development_dependency 'machinist_mongo'
-    gem.add_development_dependency 'faker'
-    
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
-  end
-  Jeweler::GemcutterTasks.new
-rescue LoadError
-  puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
-end
+require "rubygems"
+require "rake/gempackagetask"
+require "rake/rdoctask"
 
-require 'spec/rake/spectask'
-Spec::Rake::SpecTask.new(:spec) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.spec_files = FileList['spec/**/*_spec.rb']
-end
-
-Spec::Rake::SpecTask.new(:rcov) do |spec|
-  spec.libs << 'lib' << 'spec'
-  spec.pattern = 'spec/**/*_spec.rb'
-  spec.rcov = true
-end
-
-task :spec => :check_dependencies
-
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+# This builds the actual gem. For details of what all these options
+# mean, and other ones you can add, check the documentation here:
+#
+#   http://rubygems.org/read/chapter/20
+#
+spec = Gem::Specification.new do |s|
 
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "mm_compactable #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+  # Change these as appropriate
+  s.name              = "mm-embeddable"
+  s.version           = "0.0.1"
+  s.summary           = %Q{Create compact, embeddable versions of your MongoMapper documents.}
+  s.description       = %Q{For query minimization purposes in MongoDB it is useful to provide a few key properties of a document when it's embedded in another one. MongoMapper Embeddable is a plugin for MongoMapper to do just that.}
+  s.author            = "Michael Bleigh"
+  s.email             = "michael@intridea.com"
+  s.homepage          = "http://github.com/intridea/mm-embeddable"
+
+  s.has_rdoc          = true
+  s.extra_rdoc_files  = %w(README.rdoc)
+  s.rdoc_options      = %w(--main README.rdoc)
+
+  # Add any extra files to include in the gem
+  s.files             = %w(LICENSE mm-embeddable.gemspec Rakefile README.rdoc VERSION) + Dir.glob("{spec,lib}/**/*")
+  s.require_paths     = ["lib"]
+
+  # If you want to depend on other gems, add them here, along with any
+  # relevant versions
+  # s.add_dependency("some_other_gem", "~> 0.1.0")
+  s.add_dependency("mongo_mapper", ">= 0.9.0")
+
+  # If your tests use any gems, include them here
+  s.add_development_dependency("rspec")
+  s.add_development_dependency("mocha")
+  s.add_development_dependency("machinist")
+  s.add_development_dependency("machinist_mongo")
+  s.add_development_dependency("faker")
+end
+
+# This task actually builds the gem. We also regenerate a static
+# .gemspec file, which is useful if something (i.e. GitHub) will
+# be automatically building a gem for this project. If you're not
+# using GitHub, edit as appropriate.
+#
+# To publish your gem online, install the 'gemcutter' gem; Read more
+# about that here: http://gemcutter.org/pages/gem_docs
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.gem_spec = spec
+end
+
+desc "Build the gemspec file #{spec.name}.gemspec"
+task :gemspec do
+  file = File.dirname(__FILE__) + "/#{spec.name}.gemspec"
+  File.open(file, "w") {|f| f << spec.to_ruby }
+end
+
+# If you don't want to generate the .gemspec file, just remove this line. Reasons
+# why you might want to generate a gemspec:
+#  - using bundler with a git source
+#  - building the gem without rake (i.e. gem build blah.gemspec)
+#  - maybe others?
+task :package => :gemspec
+
+# Generate documentation
+Rake::RDocTask.new do |rd|
+  rd.main = "README.rdoc"
+  rd.rdoc_files.include("README.rdoc", "lib/**/*.rb")
+  rd.rdoc_dir = "rdoc"
+end
+
+desc 'Clear out RDoc and generated packages'
+task :clean => [:clobber_rdoc, :clobber_package] do
+  rm "#{spec.name}.gemspec"
 end
