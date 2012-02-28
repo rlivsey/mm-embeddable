@@ -68,10 +68,8 @@ module MongoMapper
         end
       end
 
-      module InstanceMethods
-        def to_embeddable
-          self.class.const_get(:Embeddable).from_full(self)
-        end
+      def to_embeddable
+        self.class.const_get(:Embeddable).from_full(self)
       end
     end
   end
